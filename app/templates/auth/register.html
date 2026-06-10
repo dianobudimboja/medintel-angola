@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Registo{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-in-up">
+    <div class="col-md-8 col-lg-7">
+        <div class="card-scientific p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="mb-3">
+                    <i class="fas fa-user-md fa-3x" style="color: var(--accent-cyan);"></i>
+                </div>
+                <h2 class="text-white mb-2">Registo de Médico</h2>
+                <p class="text-muted">Junte-se à Rede de Saúde Inteligente de Angola</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.register') }}">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-user me-2"></i>Nome Completo
+                    </label>
+                    <input type="text" 
+                           class="form-control form-control-scientific" 
+                           name="name" 
+                           placeholder="Dr. João Silva"
+                           required
+                           autofocus>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-envelope me-2"></i>Email Profissional
+                    </label>
+                    <input type="email" 
+                           class="form-control form-control-scientific" 
+                           name="email" 
+                           placeholder="medico@hospital.ao"
+                           required>
+                    <small class="text-muted">Usaremos apenas para fins Profissionais</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-stethoscope me-2"></i>Especialidade
+                    </label>
+                    <select class="form-control form-control-scientific" name="specialty" required>
+                        <option value="">Selecione a especialidade</option>
+                        <option value="Clínica Geral">🏥 Clínica Geral</option>
+                        <option value="Pediatria">👶 Pediatria</option>
+                        <option value="Cardiologia">❤️ Cardiologia</option>
+                        <option value="Ginecologia">👩 Ginecologia</option>
+                        <option value="Infectologia">🦠 Infectologia</option>
+                        <option value="Medicina Interna">🏨 Medicina Interna</option>
+                        <option value="Cirurgia Geral">🔪 Cirurgia Geral</option>
+                        <option value="Ortopedia">🦴 Ortopedia</option>
+                        <option value="Neurologia">🧠 Neurologia</option>
+                        <option value="Dermatologia">🧴 Dermatologia</option>
+                        <option value="Psiquiatria">🧘 Psiquiatria</option>
+                        <option value="Oftalmologia">👁️ Oftalmologia</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-building me-2"></i>Hospital / Clínica
+                    </label>
+                    <select class="form-control form-control-scientific" name="hospital" required>
+                        <option value="">Selecione o hospital</option>
+                        <option value="Hospital Américo Boavida (Luanda)">🏥 Hospital Américo Boavida (Luanda)</option>
+                        <option value="Hospital Josina Machel (Luanda)">🏥 Hospital Josina Machel (Luanda)</option>
+                        <option value="Clínica Multiperfil (Luanda)">🏥 Clínica Multiperfil (Luanda)</option>
+                        <option value="Hospital Geral de Benguela">🏥 Hospital Geral de Benguela</option>
+                        <option value="Hospital Central do Huambo">🏥 Hospital Central do Huambo</option>
+                        <option value="Hospital Provincial do Namibe">🏥 Hospital Provincial do Namibe</option>
+                        <option value="Hospital Municipal do Kilamba">🏥 Hospital Municipal do Kilamba</option>
+                        <option value="Clínica Sagrada Esperança (Luanda)">🏥 Clínica Sagrada Esperança (Luanda)</option>
+                        <option value="Clínica Sagrada Esperança (Lunda-Norte)">🏥 Clínica Sagrada Esperança (Lunda-Norte)</option>
+                        <option value="Hospital David Bernardino (Luanda)">🏥 Hospital David Bernardino (Luanda)</option>
+                        <option value="Hospital David Bernardino Kamanga (Lunda-Norte)">🏥 Hospital David Bernardino Kamanga (Lunda-Norte)</option>
+                        <option value="Outro">✏️ Outro (escrever abaixo)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3" id="outroHospitalDiv" style="display: none;">
+                    <label class="form-label">
+                        <i class="fas fa-pen me-2"></i>Especifique o Hospital
+                    </label>
+                    <input type="text" 
+                           class="form-control form-control-scientific" 
+                           name="outro_hospital" 
+                           placeholder="Digite o nome do Hospital">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-lock me-2"></i>Palavra-passe
+                    </label>
+                    <input type="password" 
+                           class="form-control form-control-scientific" 
+                           name="password" 
+                           placeholder="Mínimo 6 caracteres"
+                           required>
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Use uma Palavra-Passe Segura
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-scientific w-100">
+                    <i class="fas fa-user-plus me-2"></i>Criar Conta
+                </button>
+            </form>
+
+            <hr class="my-4" style="border-color: rgba(0,180,216,0.3);">
+
+            <div class="text-center">
+                <p class="mb-0">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Já tem conta?
+                    <a href="{{ url_for('auth.login') }}" class="text-info text-decoration-none">
+                        Faça Login aqui
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Mostrar campo "Outro hospital" quando selecionado
+    const hospitalSelect = document.querySelector('select[name="hospital"]');
+    const outroDiv = document.getElementById('outroHospitalDiv');
+    
+    hospitalSelect.addEventListener('change', function() {
+        if (this.value === 'Outro') {
+            outroDiv.style.display = 'block';
+        } else {
+            outroDiv.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

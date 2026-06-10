@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Páginas de Notificações{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">
+            <i class="fas fa-bell me-2" style="color: var(--cyan);"></i>
+            Notificações
+            {% if unread_count > 0 %}
+            <span class="badge bg-danger ms-2">{{ unread_count }} nova(s)</span>
+            {% endif %}
+        </h2>
+        <div>
+            {% if notifications %}
+            <a href="{{ url_for('admin.mark_all_notifications_read') }}" class="btn btn-outline-scientific btn-sm">
+                <i class="fas fa-check-double me-1"></i>Marcar todas como lidas
+            </a>
+            {% endif %}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-scientific btn-sm ms-2">
+                <i class="fas fa-arrow-left me-1"></i>Voltar
+            </a>
+        </div>
+    </div>
+
+    {% if notifications %}
+    <div class="card-scientific p-4">
+        <div class="list-group list-group-flush bg-transparent">
+            {% for notif in notifications %}
+            <div class="list-group-item bg-transparent border-bottom {% if not notif.is_read %}border-start border-3 border-warning{% endif %}"
+                style="border-left-color: var(--warning-orange) !important;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-1">
+                            {% if notif.type == 'warning' %}
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            {% elif notif.type == 'success' %}
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            {% elif notif.type == 'danger' %}
+                            <i class="fas fa-times-circle text-danger me-2"></i>
+                            {% else %}
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            {% endif %}
+                            <h6 class="mb-0 text-white">{{ notif.title }}</h6>
+                            {% if not notif.is_read %}
+                            <span class="badge bg-warning ms-2">Nova</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted small mb-2">{{ notif.message }}</p>
+
+                        <!-- LINK DIRETO para ações -->
+                        {% if 'recuperação' in notif.title|lower or 'password' in notif.title|lower %}
+                        <div class="mt-2">
+                            <a href="{{ url_for('admin.list_doctors') }}" class="btn btn-sm btn-scientific">
+                                <i class="fas fa-users me-1"></i>Ir para Gestão de Médicos
+                            </a>
+                            <small class="text-muted ms-2">
+                                <i class="fas fa-info-circle me-1"></i>Procure o médico pelo nome ou email
+                            </small>
+                        </div>
+                        {% elif notif.related_url %}
+                        <div class="mt-2">
+                            <a href="{{ notif.related_url }}" class="btn btn-sm btn-outline-scientific">
+                                <i class="fas fa-arrow-right me-1"></i>Ver Detalhes
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-clock me-1"></i>
+                            {{ notif.created_at.strftime('%d/%m/%Y às %H:%M') }}
+                        </small>
+                    </div>
+                    {% if not notif.is_read %}
+                    <a href="{{ url_for('admin.mark_notification_read', notification_id=notif.id) }}"
+                        class="btn btn-sm btn-outline-scientific ms-3">
+                        <i class="fas fa-check me-1"></i>Ler
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- MENSAGEM DE LEMBRETE -->
+    <div class="alert alert-info mt-4">
+        <div class="d-flex align-items-start">
+            <i class="fas fa-lightbulb fa-2x me-3" style="color: var(--cyan);"></i>
+            <div>
+                <strong class="d-block mb-1">Lembrete Importante:</strong>
+                <p class="mb-0 small">
+                    Após redefinir a Palavra-passe do Médico, <strong>não se esqueça de comunicar a nova
+                        palavra-passe</strong> ao Médico
+                    através de um <strong>canal seguro</strong> (email institucional, telefone ou mensagem privada).
+                </p>
+                <hr class="my-2">
+                <p class="mb-0 small text-muted">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    Recomendação: Use o email profissional do médico para enviar a nova palavra-passe temporária.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="card-scientific p-5 text-center">
+        <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+        <p class="text-muted">Nenhuma Notificação</p>
+        <small class="text-muted">As notificações aparecerão aqui quando houver atividades, como pedidos de recuperação
+            de password</small>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

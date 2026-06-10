@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico Clínico - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="text-white">
+            <i class="fas fa-notes-medical me-2" style="color: var(--cyan);"></i>
+            Histórico Clínico - {{ patient.name }}
+        </h2>
+        <div>
+            <a href="{{ url_for('patient.view_patient', patient_id=patient.id) }}" class="btn btn-outline-scientific">
+                <i class="fas fa-arrow-left me-2"></i>Voltar ao Perfil
+            </a>
+        </div>
+    </div>
+
+    <!-- Resumo Rápido para IA -->
+    <div class="card-scientific p-4 mb-4">
+        <h5 class="mb-3">
+            <i class="fas fa-brain me-2" style="color: var(--cyan);"></i>
+            Resumo para IA
+        </h5>
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <h3 class="text-info">{{ summary.total_consultations }}</h3>
+                <small>Consultas</small>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="text-info">{{ summary.total_exams }}</h3>
+                <small>Exames</small>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="text-info">{{ summary.diagnoses|length }}</h3>
+                <small>Diagnósticos</small>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="text-info">{{ summary.chronic_conditions|length }}</h3>
+                <small>Condições Crónicas</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulário para Adicionar Condição Crónica -->
+        <div class="col-md-12 mb-4">
+            <div class="card-scientific p-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-plus-circle me-2" style="color: var(--cyan);"></i>
+                    Adicionar Condição Crónica
+                </h5>
+                <form method="POST" action="{{ url_for('patient.add_chronic_condition', patient_id=patient.id) }}">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <input type="text" 
+                                   class="form-control form-control-scientific" 
+                                   name="condition" 
+                                   placeholder="Ex: Hipertensão, Diabetes, Asma"
+                                   required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <input type="text" 
+                                   class="form-control form-control-scientific" 
+                                   name="treatment" 
+                                   placeholder="Tratamento (ex: Losartana 50mg)">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <input type="text" 
+                                   class="form-control form-control-scientific" 
+                                   name="notes" 
+                                   placeholder="Observações">
+                        </div>
+                        <div class="col-md-1 mb-3">
+                            <button type="submit" class="btn btn-scientific w-100">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Diagnósticos Anteriores -->
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-stethoscope me-2" style="color: var(--cyan);"></i>
+                    Diagnósticos Anteriores (Consultas)
+                </h5>
+                {% if summary.diagnoses %}
+                    <div class="timeline">
+                        {% for d in summary.diagnoses[:10] %}
+                        <div class="mb-3 pb-2 border-bottom border-secondary">
+                            <small class="text-muted">{{ d.date[:10] }}</small>
+                            <p class="mb-0"><strong>{{ d.diagnosis }}</strong></p>
+                            {% if d.notes %}
+                            <small class="text-muted">{{ d.notes[:100] }}</small>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Nenhum Diagnóstico Registado</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Condições Crónicas (com opção de eliminar) -->
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-heartbeat me-2" style="color: var(--cyan);"></i>
+                    Condições Crónicas
+                    <span class="badge bg-info ms-2">{{ summary.chronic_conditions|length }}</span>
+                </h5>
+                {% if summary.chronic_conditions %}
+                    {% for c in summary.chronic_conditions %}
+                    <div class="mb-3 pb-2 border-bottom border-secondary">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <small class="text-muted">{{ c.date[:10] }}</small>
+                                <p class="mb-0"><strong>{{ c.condition }}</strong></p>
+                                {% if c.treatment %}
+                                <small class="text-info">💊 {{ c.treatment }}</small>
+                                {% endif %}
+                                {% if c.notes %}
+                                <br><small class="text-muted">{{ c.notes }}</small>
+                                {% endif %}
+                            </div>
+                            <form method="POST" action="{{ url_for('patient.delete_chronic_condition', patient_id=patient.id, history_id=c.id) }}"
+                                  onsubmit="return confirm('Tem certeza que deseja remover esta condição crónica?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center">Nenhuma Condição Crónica registada</p>
+                    <p class="text-muted small text-center">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Use o Formulário acima para adicionar condições como Hipertensão, Diabetes, etc.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico Completo de Consultas -->
+    <div class="card-scientific p-4 mb-4">
+        <h5 class="mb-3">
+            <i class="fas fa-history me-2" style="color: var(--cyan);"></i>
+            Histórico de Consultas
+        </h5>
+        {% if history.consultations %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Sintomas</th>
+                            <th>Diagnóstico</th>
+                            <th>Estado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consulta in history.consultations %}
+                        <tr>
+                            <td>{{ consulta.consultation_date.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ consulta.symptoms[:50] }}...</td>
+                            <td>{{ consulta.diagnosis.doctor_diagnosis if consulta.diagnosis else '-' }}</td>
+                            <td>
+                                {% if consulta.status == 'concluida' %}
+                                    <span class="badge bg-success">Concluída</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Em andamento</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('consultation.view_consultation', consultation_id=consulta.id) }}" class="btn btn-sm btn-outline-scientific">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted text-center">Nenhuma Consulta Registada</p>
+        {% endif %}
+    </div>
+
+    <!-- Histórico de Exames -->
+    <div class="card-scientific p-4">
+        <h5 class="mb-3">
+            <i class="fas fa-microscope me-2" style="color: var(--cyan);"></i>
+            Histórico de Exames
+        </h5>
+        {% if history.exams %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Resultados</th>
+                            <th>Análise IA</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exame in history.exams %}
+                        <tr>
+                            <td>{{ exame.exam_date.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ exame.exam_type }}</td>
+                            <td>{{ exame.results[:50] if exame.results else 'Pendente' }}...</td>
+                            <td>
+                                {% if exame.ai_analyzed %}
+                                    <span class="badge bg-info">Analisado</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('exam.view_exam', exam_id=exame.id) }}" class="btn btn-sm btn-outline-scientific">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted text-center">Nenhum Exame Registado</p>
+        {% endif %}
+    </div>
+
+    <!-- Dica -->
+    <div class="alert alert-info mt-4">
+        <i class="fas fa-robot me-2"></i>
+        <strong>Para a IA:</strong> O Histórico Clínico (incluindo condições crónicas) será usado para análises futuras. Quanto mais completo, mais precisa será a IA.
+    </div>
+</div>
+
+<style>
+.timeline {
+    max-height: 300px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}

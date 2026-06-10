@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Registar Diagnóstico{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-in-up">
+    <div class="col-md-8 col-lg-7">
+        <div class="card-scientific p-4 p-md-5">
+            <div class="text-center mb-4">
+                <i class="fas fa-clipboard-list fa-3x" style="color: var(--accent-cyan);"></i>
+                <h2 class="text-white mt-2">Registar Diagnóstico</h2>
+                <p class="text-muted">
+                    Paciente: <strong class="text-info">{{ patient.name }}</strong>
+                </p>
+            </div>
+
+            <!-- Resumo da Consulta -->
+            <div class="info-card mb-4">
+                <i class="fas fa-notes-medical"></i>
+                <strong>Sintomas relatados:</strong><br>
+                <small>{{ consultation.symptoms }}</small>
+            </div>
+
+            <form method="POST" id="diagnosisForm">
+                <input type="hidden" name="ai_suggestion" id="aiSuggestion">
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-diagnoses me-2"></i>Diagnóstico Final *
+                    </label>
+                    <input type="text" class="form-control form-control-scientific" name="doctor_diagnosis"
+                        placeholder="Ex: Malária, Febre Tifoide, etc" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-capsules me-2"></i>Medicação Prescrita
+                    </label>
+                    <textarea class="form-control form-control-scientific" name="prescribed_medication" rows="2"
+                        placeholder="Ex: Arteméter + Lumefantrina, Paracetamol 500mg..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-lightbulb me-2"></i>Recomendações
+                    </label>
+                    <textarea class="form-control form-control-scientific" name="recommendations" rows="2"
+                        placeholder="Ex: Repouso, hidratação, retorno em 7 dias..."></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-pen me-2"></i>Notas Adicionais
+                    </label>
+                    <textarea class="form-control form-control-scientific" name="doctor_notes" rows="3"
+                        placeholder="Observações relevantes sobre o caso..."></textarea>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-scientific flex-grow-1">
+                        <i class="fas fa-save me-2"></i>Finalizar Consulta
+                    </button>
+                    <a href="{{ url_for('consultation.view_consultation', consultation_id=consultation.id) }}"
+                        class="btn btn-outline-scientific">
+                        <i class="fas fa-times me-2"></i>Voltar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sugestão da IA (se disponível) -->
+    <div class="col-md-4">
+        <div class="card-scientific p-4">
+            <h5 class="text-white mb-3">
+                <i class="fas fa-brain me-2" style="color: var(--accent-cyan);"></i>
+                Sugestão da IA
+            </h5>
+            <div id="aiSuggestionBox">
+                <button class="btn btn-outline-scientific w-100" onclick="getAISuggestion()">
+                    <i class="fas fa-robot me-2"></i>Obter Sugestão da IA
+                </button>
+            </div>
+        </div>
+        <br>
+        <div class="card-scientific p-4">
+            <a href="{{ url_for('exam.list_patient_exams', patient_id=patient.id) }}"
+                    class="btn btn-outline-scientific">
+                    <i class="fas fa-microscope me-2"></i>Exames
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getAISuggestion() {
+        const btn = document.querySelector('#aiSuggestionBox button');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>IA a analisar...';
+
+        fetch(window.location.href.replace('/diagnose', '/analyze'), {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                let html = '<h6 class="text-info mb-3">Análise da IA:</h6>';
+
+                if (data.possibilidades && data.possibilidades.length > 0) {
+                    html += '<p class="mb-2">Possíveis diagnósticos:</p>';
+                    data.possibilidades.forEach(p => {
+                        html += `<div class="mb-2">
+                            <span>${p.doenca}</span>
+                            <span class="float-end text-info">${p.probabilidade}%</span>
+                            <div class="progress" style="height: 3px;">
+                                <div class="progress-bar bg-info" style="width: ${p.probabilidade}%"></div>
+                            </div>
+                         </div>`;
+                    });
+                }
+
+                html += '<hr class="my-3">';
+                html += '<button class="btn btn-sm btn-scientific w-100" onclick="useAISuggestion()">Usar esta sugestão</button>';
+
+                document.getElementById('aiSuggestionBox').innerHTML = html;
+
+                // Guardar sugestão
+                window.aiSuggestion = data;
+            })
+            .catch(error => {
+                document.getElementById('aiSuggestionBox').innerHTML = '<div class="alert alert-danger">Erro ao obter sugestão</div>';
+            });
+    }
+
+    function useAISuggestion() {
+        if (window.aiSuggestion && window.aiSuggestion.possibilidades && window.aiSuggestion.possibilidades.length > 0) {
+            const topDiagnosis = window.aiSuggestion.possibilidades[0].doenca;
+            document.querySelector('input[name="doctor_diagnosis"]').value = topDiagnosis;
+            document.getElementById('aiSuggestion').value = JSON.stringify(window.aiSuggestion);
+            alert(`Diagnóstico sugerido: ${topDiagnosis} preenchido!`);
+        }
+    }
+</script>
+{% endblock %}

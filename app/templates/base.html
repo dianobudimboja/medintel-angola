@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Apoio ao Diagnóstico{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.ico') }}">
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-microscope me-2"></i>MedIntel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('patient.list_patients') }}">
+                            <i class="fas fa-users me-1"></i>Pacientes
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-user-md me-1"></i>{{ current_user.name.split()[0] }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('profile.index') }}"><i
+                                        class="fas fa-user me-2"></i>Meu Perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            {% if current_user.is_admin() %}
+                            <!-- Notificações com texto -->
+                            <li class="nav-item">
+                                <a class="nav-link position-relative" href="{{ url_for('admin.notifications_page') }}">
+                                    <i class="fas fa-bell me-1"></i>
+                                    Notificações
+                                    {% if unread_notifications > 0 %}
+                                    <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">
+                                        {{ unread_notifications }}
+                                    </span>
+                                    {% endif %}
+                                </a>
+                            </li>
+
+                            <!-- Admin -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-shield-alt me-1"></i>Admin
+                                </a>
+                            </li>
+                            {% endif %}
+                            <br>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Sair</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {% else %}
+
+                    {% endif %}
+
+                    <!-- Botão de Modo Escuro/Claro -->
+                    <li class="nav-item ms-2">
+                        <div class="theme-toggle" id="themeToggleBtn">
+                            <i class="fas fa-sun" id="theme-sun" style="display: none;"></i>
+                            <i class="fas fa-moon" id="theme-moon" style="display: none;"></i>
+                            <span style="font-size: 0.8rem;">Modo</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="py-5">
+        <div class="container">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-scientific alert-scientific-{{ category if category else 'info' }} alert-dismissible fade show fade-in-up"
+                role="alert">
+                <i
+                    class="fas {{ 'fa-check-circle' if category == 'success' else 'fa-exclamation-triangle' if category == 'danger' else 'fa-info-circle' }} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- Page Content -->
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="fas fa-heartbeat me-2 text-danger"></i>
+                MedIntel - Apoio à Decisão Clínica com IA
+                <i class="fas fa-microchip ms-2 text-info"></i>
+            </p>
+            <small>
+                © 2025 - Sistema de Apoio ao Diagnóstico | Angola
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript Personalizado -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

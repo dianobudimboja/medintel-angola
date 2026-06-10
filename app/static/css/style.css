@@ -1,0 +1,711 @@
+/* ============================================
+   MedIntel Angola - Modo Claro/Escuro (MODERNO)
+   Modo Escuro: Preto/Cinza escuro
+   Modo Claro: Branco/Cinza claro
+   ============================================ */
+
+/* ========== MODO ESCURO (PADRÃO) ========== */
+:root {
+    /* Fundos */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #111111;
+    --bg-card: #1a1a1a;
+    --bg-input: #1a1a1a;
+    --bg-hover: #2a2a2a;
+    --bg-table-header: #1a1a1a;
+
+    /* Textos - TODOS COM CONTRASTE */
+    --text-primary: #e5e5e5;
+    --text-secondary: #a3a3a3;
+    --text-muted: #a3a3a3;
+    --text-on-white: #ffffff;
+    --text-dark: #e5e5e5;
+
+    /* Bordas */
+    --border-color: #2a2a2a;
+    --border-hover: #3a3a3a;
+
+    /* Cores de destaque */
+    --accent-cyan: #00b4d8;
+    --accent-blue: #0077b6;
+    --success-green: #2ecc71;
+    --warning-orange: #f39c12;
+    --danger-red: #e74c3c;
+
+    /* Sombras */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* ========== MODO CLARO ========== */
+[data-theme="light"] {
+    /* Fundos */
+    --bg-primary: #f5f7fa;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-input: #ffffff;
+    --bg-hover: #f0f2f5;
+    --bg-table-header: #f8f9fa;
+
+    /* Textos - TODOS COM CONTRASTE NO MODO CLARO */
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a6a;
+    --text-muted: #6c6c8a;
+    /* No modo claro, texto "branco" passa a ser texto escuro para contraste */
+    --text-on-white: #1a1a2e;
+    --text-dark: #1a1a2e;
+
+    /* Bordas */
+    --border-color: #e2e8f0;
+    --border-hover: #cbd5e1;
+
+    /* Sombras */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Reset e Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ============================================
+   Navbar
+   ============================================ */
+.navbar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    /* Garantir visibilidade no modo claro */
+    -webkit-text-stroke: 0;
+}
+
+.nav-link {
+    color: var(--text-primary) !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--accent-cyan) !important;
+}
+
+.dropdown-menu {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+}
+
+.dropdown-item:hover {
+    background: var(--bg-hover);
+    color: var(--accent-cyan);
+}
+
+/* ============================================
+   Botão de Modo
+   ============================================ */
+.theme-toggle {
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 40px;
+    padding: 6px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent-cyan);
+    transform: scale(1.02);
+}
+
+.theme-toggle i {
+    font-size: 1rem;
+}
+
+.theme-toggle .fa-sun {
+    color: var(--warning-orange);
+}
+
+.theme-toggle .fa-moon {
+    color: var(--accent-cyan);
+}
+
+.theme-toggle span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Cards - CORRIGIDO (sempre com fundo)
+   ============================================ */
+.card-scientific {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-scientific:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Todo texto dentro de card tem contraste garantido */
+.card-scientific,
+.card-scientific * {
+    color: var(--text-primary);
+}
+
+/* ============================================
+   Botões
+   ============================================ */
+.btn-scientific {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    border: none;
+    /* Botão com fundo escuro → texto branco fica bem */
+    color: var(--text-on-white);
+    font-weight: 600;
+    padding: 10px 24px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-scientific:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-on-white);
+}
+
+.btn-outline-scientific {
+    background: transparent;
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    font-weight: 500;
+    padding: 9px 23px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-scientific:hover {
+    background: var(--accent-cyan);
+    /* Hover tem fundo escuro → texto branco */
+    color: var(--text-on-white);
+}
+
+.btn-outline-danger {
+    border: 1px solid var(--danger-red);
+    color: var(--danger-red);
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: var(--danger-red);
+    /* Hover tem fundo vermelho → texto branco */
+    color: var(--text-on-white);
+}
+
+/* ============================================
+   Formulários
+   ============================================ */
+.form-control-scientific {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.form-control-scientific:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+    outline: none;
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+
+.form-control-scientific::placeholder {
+    color: var(--text-muted);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Tabelas - CORRIGIDO (contraste garantido)
+   ============================================ */
+.table-responsive {
+    border-radius: 12px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border-radius: 12px;
+}
+
+th {
+    background: var(--bg-table-header);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+}
+
+td {
+    padding: 12px 16px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+tr:hover td {
+    background: var(--bg-hover);
+}
+
+/* Compatibilidade com Bootstrap */
+.table,
+.table-dark,
+.table th,
+.table td {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.table-dark th {
+    background: var(--bg-table-header);
+}
+
+/* ============================================
+   Alertas e Mensagens - CORRIGIDO
+   ============================================ */
+.alert {
+    border-radius: 10px;
+    border: none;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-left: 4px solid;
+    box-shadow: var(--shadow-sm);
+}
+
+.alert-success {
+    border-left-color: var(--success-green);
+}
+
+.alert-danger {
+    border-left-color: var(--danger-red);
+}
+
+.alert-warning {
+    border-left-color: var(--warning-orange);
+}
+
+.alert-info {
+    border-left-color: var(--accent-cyan);
+}
+
+.alert .btn-close {
+    filter: none;
+    opacity: 0.5;
+}
+
+[data-theme="light"] .alert .btn-close {
+    filter: brightness(0.8);
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    margin-top: 60px;
+    padding: 24px 0;
+}
+
+.footer p,
+.footer small,
+.footer .text-muted {
+    color: var(--text-muted);
+}
+
+/* ============================================
+   Badges
+   ============================================ */
+.badge-scientific {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    /* Badge com fundo escuro → texto branco */
+    color: var(--text-on-white);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    /* Badges normais: usar variável adaptável */
+    color: var(--text-on-white);
+}
+
+/* ============================================
+   Progress Bars
+   ============================================ */
+.progress {
+    background: var(--bg-hover);
+    border-radius: 8px;
+    height: 6px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+    border-radius: 8px;
+}
+
+/* ============================================
+   TEXTOS - CORRIGIDO (todos com contraste)
+   ============================================ */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+small,
+.small-text {
+    color: var(--text-secondary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-primary);
+}
+
+p {
+    color: var(--text-primary);
+}
+
+a:not(.btn) {
+    color: var(--accent-cyan);
+    text-decoration: none;
+}
+
+a:not(.btn):hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+}
+
+label {
+    color: var(--text-secondary);
+}
+
+/* Placeholders */
+::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Listas */
+.list-group-item {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Info Card */
+.info-card {
+    background: var(--bg-hover);
+    border-left: 3px solid var(--accent-cyan);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.info-card i {
+    color: var(--accent-cyan);
+    margin-right: 10px;
+}
+
+.info-card strong,
+.info-card span,
+.info-card p {
+    color: var(--text-primary);
+}
+
+/* Estatísticas no Dashboard */
+.display-4,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5 {
+    color: var(--text-primary);
+}
+
+.card-title,
+.card-text {
+    color: var(--text-primary);
+}
+
+/* ============================================
+   REGRA GLOBAL: PROTEÇÃO CONTRA TEXTO BRANCO INVISÍVEL
+   Qualquer elemento que NÃO esteja dentro de um botão/card com fundo
+   não pode ter texto branco no modo claro.
+   ============================================ */
+
+/* Remove qualquer color: white hardcoded que cause problemas */
+*:not(.btn-scientific):not(.btn-outline-scientific):not(.btn-outline-danger):not(.badge-scientific):not(.badge):not(.btn) {
+    color: var(--text-primary);
+}
+
+/* No modo claro, força todos os textos genéricos a serem escuros */
+[data-theme="light"] *:not(.btn):not(.badge):not(.progress-bar):not(.theme-toggle):not(.navbar-brand):not(.nav-link) {
+    color: var(--text-primary);
+}
+
+/* Garantir que textos dentro de elementos sem fundo não ficam brancos */
+[data-theme="light"] .text-white {
+    color: var(--text-on-white) !important;
+}
+
+/* ============================================
+   Animações
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* ============================================
+   Scrollbar
+   ============================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-hover);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-cyan);
+}
+
+/* ============================================
+   BARRAS DE PROGRESSO - DOENÇAS (ANGOLA)
+   Mantém a estrutura HTML existente
+   ============================================ */
+
+/* Container das estatísticas */
+.card-scientific h5 {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+/* Texto dos nomes das doenças - SEMPRE VISÍVEL */
+.d-flex span:first-child {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Percentagens - SEMPRE VISÍVEIS */
+.d-flex span:last-child,
+.text-info {
+    color: var(--text-primary) !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Container da barra de progresso */
+.progress {
+    background: var(--bg-hover) !important;
+    border-radius: 8px;
+    height: 12px;
+    box-shadow: none;
+}
+
+/* Barra de progresso base */
+.progress-bar {
+    border-radius: 8px;
+    transition: width 0.6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   CORES ESPECÍFICAS POR DOENÇA
+   (Ajustadas à imagem que mostraste)
+   ============================================ */
+
+/* Malária - Vermelho */
+.bg-danger {
+    background: linear-gradient(90deg, #e74c3c, #c0392b) !important;
+}
+
+/* Febre Tifoide - Laranja/Amarelo */
+.bg-warning {
+    background: linear-gradient(90deg, #f39c12, #e67e22) !important;
+}
+
+/* Tuberculose - Azul */
+.bg-info {
+    background: linear-gradient(90deg, #00b4d8, #0077b6) !important;
+}
+
+/* Dengue - Verde */
+.bg-success {
+    background: linear-gradient(90deg, #2ecc71, #27ae60) !important;
+}
+
+/* Outras - Cinza */
+.bg-secondary {
+    background: linear-gradient(90deg, #95a5a6, #7f8c8d) !important;
+}
+
+/* Hover nas barras */
+.progress-bar:hover {
+    opacity: 0.85;
+    filter: brightness(1.1);
+}
+
+/* ============================================
+   MODO CLARO - AJUSTES ESPECÍFICOS
+   ============================================ */
+[data-theme="light"] .progress {
+    background: #e2e8f0 !important;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .d-flex span,
+[data-theme="light"] .text-info {
+    color: var(--text-primary) !important;
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+@media (max-width: 768px) {
+
+    .d-flex span:first-child,
+    .d-flex span:last-child,
+    .text-info {
+        font-size: 0.8rem;
+    }
+
+    .progress {
+        height: 10px;
+    }
+
+    .progress-bar {
+        font-size: 0.65rem;
+    }
+}
+
+
+/* ============================================
+   Responsividade
+   ============================================ */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .btn-scientific,
+    .btn-outline-scientific {
+        padding: 6px 16px;
+        font-size: 0.875rem;
+    }
+
+    th,
+    td {
+        padding: 8px 12px;
+        font-size: 0.875rem;
+    }
+
+    .card-scientific {
+        margin: 8px;
+    }
+}
+
+/* ============================================
+   Loading Spinner
+   ============================================ */
+.spinner-scientific {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

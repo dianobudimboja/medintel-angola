@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Adicionar Exame
+{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center fade-in-up">
+    <div class="col-md-8 col-lg-7">
+      <div class="card-scientific p-4 p-md-5">
+        <div class="text-center mb-4">
+          <i class="fas fa-microscope fa-3x" style="color: var(--cyan);"></i>
+          <h2 class="text-white mt-2">Adicionar Exame</h2>
+          <p class="text-muted">
+            Paciente: <strong class="text-info">{{ patient.name }}</strong>
+            {% if patient.identification %}
+              ({{ patient.identification }})
+            {% endif %}
+          </p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="consultation_id" value="{{ consultation_id }}" />
+
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-tag me-2"></i>Tipo de Exame *</label>
+            <select class="form-control form-control-scientific" name="exam_type" required>
+              <option value="">Selecione...</option>
+              <option value="Raio-X">📷 Raio-X</option>
+              <option value="Sangue">🩸 Análise de Sangue</option>
+              <option value="Urina">💧 Análise de Urina</option>
+              <option value="Ultrassom">🔊 Ultrassom</option>
+              <option value="Tomografia">🖥️ Tomografia</option>
+              <option value="Ressonância">🧠 Ressonância Magnética</option>
+              <option value="Biopsia">🔬 Biópsia</option>
+              <option value="Eletrocardiograma">❤️ Eletrocardiograma</option>
+              <option value="Outro">📋 Outro</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-heading me-2"></i>Nome do Exame</label>
+            <input type="text" class="form-control form-control-scientific" name="exam_name" placeholder="Ex: Hemograma completo, Raio-X de tórax..." />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-file-alt me-2"></i>Resultados</label>
+            <textarea class="form-control form-control-scientific" name="results" rows="4" placeholder="Descreva os resultados do exame..."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-sticky-note me-2"></i>Observações</label>
+            <textarea class="form-control form-control-scientific" name="notes" rows="2" placeholder="Observações adicionais..."></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-upload me-2"></i>Arquivo (imagem, PDF, DICOM)</label>
+            <input type="file" class="form-control form-control-scientific" name="exam_file" accept="image/*,application/pdf" />
+            <small class="text-muted">Formatos: PNG, JPG, JPEG, GIF, PDF. Máx: 16MB</small>
+          </div>
+
+          <div class="d-flex gap-3">
+            <button type="submit" class="btn btn-scientific flex-grow-1"><i class="fas fa-save me-2"></i>Guardar Exame</button>
+            <a href="{{ url_for('exam.list_patient_exams', patient_id=patient.id) }}" class="btn btn-outline-scientific"><i class="fas fa-times me-2"></i>Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

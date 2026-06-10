@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Gestão de Médicos{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="text-white">
+            <i class="fas fa-user-md me-2" style="color: var(--cyan);"></i>
+            Gestão de Médicos
+        </h2>
+    </div>
+
+    <!-- Barra de Pesquisa -->
+    <div class="card-scientific p-4 mb-4">
+        <form method="GET" action="{{ url_for('admin.list_doctors') }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control form-control-scientific"
+                    placeholder="Pesquisar por nome ou email..." value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-scientific w-100">
+                    <i class="fas fa-search me-2"></i>Pesquisar
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('admin.list_doctors') }}" class="btn btn-outline-scientific w-100">
+                    <i class="fas fa-undo me-2"></i>Limpar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filtros de Status -->
+    <div class="mb-4">
+        <div class="btn-group">
+            <a href="{{ url_for('admin.list_doctors', status='all', search=search) }}"
+                class="btn btn-outline-scientific btn-sm {% if current_status == 'all' or not current_status %}active{% endif %}">Todos</a>
+            <a href="{{ url_for('admin.list_doctors', status='pending', search=search) }}"
+                class="btn btn-outline-scientific btn-sm {% if current_status == 'pending' %}active{% endif %}">Pendentes</a>
+            <a href="{{ url_for('admin.list_doctors', status='verified', search=search) }}"
+                class="btn btn-outline-scientific btn-sm {% if current_status == 'verified' %}active{% endif %}">Verificados</a>
+            <a href="{{ url_for('admin.list_doctors', status='inactive', search=search) }}"
+                class="btn btn-outline-scientific btn-sm {% if current_status == 'inactive' %}active{% endif %}">Inativos</a>
+        </div>
+    </div>
+
+    <!-- Lista de Médicos -->
+    <div class="card-scientific p-4">
+        {% if doctors %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Especialidade</th>
+                        <th>Hospital</th>
+                        <th>Estado</th>
+                        <th>Função</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doctor in doctors %}
+                    <tr>
+                        <td>{{ doctor.name }}</td>
+                        <td>{{ doctor.email }}</td>
+                        <td>{{ doctor.specialty or '-' }}</td>
+                        <td>{{ doctor.hospital or '-' }}</td>
+                        <td>
+                            {% if doctor.is_verified and doctor.is_active %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>Verificado
+                            </span>
+                            {% elif not doctor.is_active %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-ban me-1"></i>Suspenso
+                            </span>
+                            {% else %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-clock me-1"></i>Pendente
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge-scientific">{{ doctor.role|replace('_', ' ')|title }}</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.view_doctor', doctor_id=doctor.id) }}"
+                                class="btn btn-sm btn-outline-scientific">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Info de resultados -->
+        <div class="text-muted text-center mt-3 small">
+            Exibindo {{ doctors|length }} médico(s)
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-inbox fa-3x text-muted mb-2"></i>
+            <p class="text-muted">Nenhum Médico encontrado.</p>
+            {% if search %}
+            <p class="text-muted small">Tente outra pesquisa ou <a href="{{ url_for('admin.list_doctors') }}"
+                    class="text-info">limpar filtros</a></p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .btn-group .btn.active {
+        background: linear-gradient(135deg, var(--cyan), var(--blue));
+        color: white;
+        border-color: transparent;
+    }
+</style>
+{% endblock %}

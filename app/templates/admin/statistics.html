@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Estatísticas{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">
+            <i class="fas fa-chart-line me-2" style="color: var(--cyan);"></i>
+            Estatísticas do Sistema
+        </h2>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-scientific">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card-scientific p-3 text-center">
+                <i class="fas fa-user-md fa-3x text-info mb-2"></i>
+                <h3 class="mb-0">{{ stats.doctors.total }}</h3>
+                <small class="text-muted">Total Médicos</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-scientific p-3 text-center">
+                <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                <h3 class="mb-0">{{ stats.doctors.verified }}</h3>
+                <small class="text-muted">Verificados</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-scientific p-3 text-center">
+                <i class="fas fa-clock fa-3x text-warning mb-2"></i>
+                <h3 class="mb-0">{{ stats.doctors.pending }}</h3>
+                <small class="text-muted">Pendentes</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-scientific p-3 text-center">
+                <i class="fas fa-ban fa-3x text-danger mb-2"></i>
+                <h3 class="mb-0">{{ stats.doctors.inactive }}</h3>
+                <small class="text-muted">Inativos</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card-scientific p-3 text-center">
+                <i class="fas fa-users fa-3x text-info mb-2"></i>
+                <h3 class="mb-0">{{ stats.patients.total }}</h3>
+                <small class="text-muted">Pacientes</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-scientific p-3 text-center">
+                <i class="fas fa-stethoscope fa-3x text-info mb-2"></i>
+                <h3 class="mb-0">{{ stats.consultations.total }}</h3>
+                <small class="text-muted">Consultas</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-scientific p-3 text-center">
+                <i class="fas fa-microscope fa-3x text-info mb-2"></i>
+                <h3 class="mb-0">{{ stats.exams.total }}</h3>
+                <small class="text-muted">Exames</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultas e Exames por Mês -->
+    {% if stats.consultations.by_month %}
+    <div class="card-scientific p-4 mt-4">
+        <h5 class="mb-3">
+            <i class="fas fa-chart-bar me-2" style="color: var(--cyan);"></i>
+            Consultas e Exames por Mês
+        </h5>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Total de Consultas</th>
+                        <th>Total de Exames</th>
+                        <th>Total (Consultas + Exames)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stats.consultations.by_month %}
+                    <tr>
+                        <td>{{ item.month }}</td>
+                        <td class="text-center">{{ item.consultations }}</td>
+                        <td class="text-center">{{ item.exams }}</td>
+                        <td class="text-center">
+                            <strong>{{ item.consultations + item.exams }}</strong>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-active">
+                        <th>Total Geral</th>
+                        <th class="text-center">{{ stats.consultations.total }}</th>
+                        <th class="text-center">{{ stats.exams.total }}</th>
+                        <th class="text-center">{{ stats.consultations.total + stats.exams.total }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Gráfico simples com progress bars -->
+    <div class="card-scientific p-4 mt-4">
+        <h5 class="mb-3">
+            <i class="fas fa-chart-pie me-2" style="color: var(--cyan);"></i>
+            Distribuição Geral
+        </h5>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>👨‍⚕️ Médicos</span>
+                        <span>{{ stats.doctors.total }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-info" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>✅ Médicos Verificados</span>
+                        <span>{{ stats.doctors.verified }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success"
+                            style="width: {{ (stats.doctors.verified / stats.doctors.total * 100) if stats.doctors.total > 0 else 0 }}%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>🩺 Consultas</span>
+                        <span>{{ stats.consultations.total }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-info" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>🔬 Exames</span>
+                        <span>{{ stats.exams.total }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

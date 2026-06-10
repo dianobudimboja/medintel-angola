@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório da Consulta - {{ patient.name }}</title>
+    <style>
+        @page {
+            size: a4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #1a1a2e;
+            font-size: 12px;
+        }
+        
+        .header {
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #00b4d8;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #0077b6;
+            font-size: 22px;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            color: #0077b6;
+            font-size: 16px;
+            border-left: 3px solid #00b4d8;
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .info-card {
+            background: #f5f7fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            padding: 6px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            width: 130px;
+            color: #4a4a6a;
+        }
+        
+        .info-value {
+            flex: 1;
+            color: #1a1a2e;
+        }
+        
+        .diagnosis-box {
+            background: #e8f4f8;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .diagnosis-box h3 {
+            color: #0077b6;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding-top: 15px;
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 9px;
+            color: #6c6c8a;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 MedIntel</h1>
+        <p>Relatório de Consulta Médica</p>
+        <p>Gerado em {{ generated_date.strftime('%d/%m/%Y às %H:%M') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>📋 Informações da Consulta</h2>
+        <div class="info-card">
+            <div class="info-row">
+                <div class="info-label">Paciente:</div>
+                <div class="info-value">{{ patient.name }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">BI/NIF:</div>
+                <div class="info-value">{{ patient.identification or 'Não registado' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Data da consulta:</div>
+                <div class="info-value">{{ consultation.consultation_date.strftime('%d/%m/%Y às %H:%M') }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Médico:</div>
+                <div class="info-value">{{ consultation.doctor.name if consultation.doctor else '-' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Sintomas:</div>
+                <div class="info-value">{{ consultation.symptoms }}</div>
+            </div>
+            {% if consultation.vital_signs %}
+            <div class="info-row">
+                <div class="info-label">Sinais vitais:</div>
+                <div class="info-value">{{ consultation.vital_signs }}</div>
+            </div>
+            {% endif %}
+            {% if consultation.observations %}
+            <div class="info-row">
+                <div class="info-label">Observações:</div>
+                <div class="info-value">{{ consultation.observations }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if diagnosis %}
+    <div class="section">
+        <h2>🩺 Diagnóstico</h2>
+        <div class="diagnosis-box">
+            <h3>Diagnóstico Final:</h3>
+            <p style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">{{ diagnosis.doctor_diagnosis }}</p>
+            
+            {% if diagnosis.prescribed_medication %}
+            <h3>💊 Medicação Prescrita:</h3>
+            <p>{{ diagnosis.prescribed_medication }}</p>
+            {% endif %}
+            
+            {% if diagnosis.recommendations %}
+            <h3>📋 Recomendações:</h3>
+            <p>{{ diagnosis.recommendations }}</p>
+            {% endif %}
+            
+            {% if diagnosis.doctor_notes %}
+            <h3>📝 Notas do Médico:</h3>
+            <p>{{ diagnosis.doctor_notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>Este Documento é um Resumo da Consulta Médica.</p>
+        <p>Para informações detalhadas, consulte o Sistema MedIntel.</p>
+    </div>
+</body>
+</html>

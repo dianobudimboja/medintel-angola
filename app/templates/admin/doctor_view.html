@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Médico: {{ doctor.name }}{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="text-white">
+            <i class="fas fa-user-md me-2" style="color: var(--cyan);"></i>
+            {{ doctor.name }}
+            {% if doctor.role == 'super_admin' %}
+            <span class="badge bg-danger ms-2">Super Admin</span>
+            {% elif doctor.role == 'admin' %}
+            <span class="badge bg-info ms-2">Admin</span>
+            {% endif %}
+        </h2>
+        <div>
+            <a href="{{ url_for('admin.list_doctors') }}" class="btn btn-outline-scientific">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-info-circle me-2" style="color: var(--cyan);"></i>
+                    Informações Pessoais
+                </h5>
+                <table class="table table-borderless">
+                    <tr>
+                        <td class="text-muted" style="width: 140px;">Nome:</td>
+                        <td class="text-white">{{ doctor.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Email:</td>
+                        <td class="text-white">{{ doctor.email }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Especialidade:</td>
+                        <td class="text-white">{{ doctor.specialty or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Hospital:</td>
+                        <td class="text-white">{{ doctor.hospital or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Registo:</td>
+                        <td class="text-white">{{ doctor.registration_date.strftime('%d/%m/%Y %H:%M') if
+                            doctor.registration_date else '-' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-shield-alt me-2" style="color: var(--cyan);"></i>
+                    Estado da Conta
+                </h5>
+                <table class="table table-borderless">
+                    <tr>
+                        <td class="text-muted" style="width: 140px;">Verificado:</td>
+                        <td>
+                            {% if doctor.is_verified %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Sim</span>
+                            {% else %}
+                            <span class="badge bg-warning"><i class="fas fa-clock me-1"></i>Não</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Ativo:</td>
+                        <td>
+                            {% if doctor.is_active %}
+                            <span class="badge bg-success">Sim</span>
+                            {% else %}
+                            <span class="badge bg-danger">Não</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Função:</td>
+                        <td><span class="badge-scientific">{{ doctor.role|replace('_', ' ')|title }}</span></td>
+                    </tr>
+                    {% if doctor.verified_by %}
+                    <tr>
+                        <td class="text-muted">Verificado por:</td>
+                        <td class="text-white">{{ doctor.verified_by_user.name if doctor.verified_by_user else '-' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Data Verificação:</td>
+                        <td class="text-white">{{ doctor.verified_at.strftime('%d/%m/%Y %H:%M') if doctor.verified_at
+                            else '-' }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentos do Médico -->
+    {% if doctor.document_path %}
+    <div class="card-scientific p-4 mb-4">
+        <h5 class="mb-3">
+            <i class="fas fa-file-alt me-2" style="color: var(--cyan);"></i>
+            Documentos de Verificação
+        </h5>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong><i class="fas fa-id-card me-2"></i>Nº Carteira Profissional:</strong> {{
+                    doctor.license_number
+                    or 'Não informado' }}</p>
+                <p><strong><i class="fas fa-file-pdf me-2"></i>Documento Anexado:</strong></p>
+                <a href="{{ url_for('admin.download_document', doctor_id=doctor.id) }}"
+                    class="btn btn-sm btn-outline-scientific">
+                    <i class="fas fa-download me-2"></i>Descarregar Documento
+                </a>
+            </div>
+            {% if doctor.verification_notes %}
+            <div class="col-md-6">
+                <p><strong><i class="fas fa-comment me-2"></i>Notas do Administrador:</strong></p>
+                <p class="text-muted small">{{ doctor.verification_notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Ações do Administrador (APENAS se não for Super Admin OU se for Super Admin a ver outro) -->
+    {% if current_user.is_super_admin() or (doctor.role != 'super_admin' and not is_self) %}
+    <div class="card-scientific p-4">
+        <h5 class="mb-3">
+            <i class="fas fa-tools me-2" style="color: var(--cyan);"></i>
+            Ações de Administração
+        </h5>
+        <div class="row g-3">
+            {% if not doctor.is_verified and doctor.is_active and doctor.role != 'super_admin' %}
+            <div class="col-md-4">
+                <form method="POST" action="{{ url_for('admin.verify_doctor', doctor_id=doctor.id) }}">
+                    <div class="input-group">
+                        <input type="text" name="notes" class="form-control form-control-scientific"
+                            placeholder="Notas (opcional)">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Verificar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <form method="POST" action="{{ url_for('admin.reject_doctor', doctor_id=doctor.id) }}">
+                    <div class="input-group">
+                        <input type="text" name="notes" class="form-control form-control-scientific"
+                            placeholder="Motivo da rejeição">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-times me-2"></i>Rejeitar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            {% if doctor.role != 'super_admin' %}
+            <div class="col-md-3">
+                <form method="POST" action="{{ url_for('admin.toggle_doctor_status', doctor_id=doctor.id) }}">
+                    <button type="submit" class="btn btn-outline-warning w-100"
+                        onclick="return confirm('Tem certeza que deseja alterar o status desta conta?')">
+                        {% if doctor.is_active %}
+                        <i class="fas fa-pause me-2"></i>Suspender Conta
+                        {% else %}
+                        <i class="fas fa-play me-2"></i>Reativar Conta
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+
+            <div class="col-md-3">
+                <form method="POST" action="{{ url_for('admin.reset_doctor_password', doctor_id=doctor.id) }}">
+                    <div class="input-group">
+                        <input type="password" name="new_password" class="form-control form-control-scientific"
+                            placeholder="Nova Palavra-passe" required>
+                        <button type="submit" class="btn btn-outline-info">
+                            <i class="fas fa-key me-2"></i>Redefinir
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- PROMOVER - Admin normal ou Super Admin pode promover (mas nunca a Super Admin) -->
+            {% if current_user.is_admin() and doctor.role != 'super_admin' and doctor.id != current_user.id %}
+            <div class="col-md-3">
+                <form method="POST" action="{{ url_for('admin.change_doctor_role', doctor_id=doctor.id) }}">
+                    <div class="input-group">
+                        <select name="role" class="form-control form-control-scientific">
+                            <option value="medico" {% if doctor.role=='medico' %}selected{% endif %}>Médico</option>
+                            <option value="admin" {% if doctor.role=='admin' %}selected{% endif %}>Administrador
+                            </option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-scientific">
+                            <i class="fas fa-exchange-alt me-2"></i>Promover
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- ELIMINAR - APENAS Super Admin e NUNCA sobre si próprio -->
+            {% if current_user.is_super_admin() and doctor.id != current_user.id and doctor.role != 'super_admin' %}
+            <div class="col-md-3">
+                <form method="POST" action="{{ url_for('admin.delete_doctor', doctor_id=doctor.id) }}"
+                    onsubmit="return confirm('⚠️ ATENÇÃO: Esta ação é irreversível! Tem certeza que deseja eliminar este médico permanentemente?')">
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-trash-alt me-2"></i>Eliminar
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% elif doctor.role == 'super_admin' and not current_user.is_super_admin() %}
+    <div class="card-scientific p-4 text-center">
+        <i class="fas fa-lock fa-3x text-danger mb-2"></i>
+        <h5 class="text-danger">Acesso Restrito</h5>
+        <p class="text-muted">Não tem permissão para modificar este perfil.</p>
+    </div>
+    {% elif is_self and doctor.role == 'super_admin' %}
+    <div class="card-scientific p-4 text-center">
+        <i class="fas fa-info-circle fa-3x text-info mb-2"></i>
+        <h5 class="text-info">Perfil de Super Administrador</h5>
+        <p class="text-muted">Alterações a este Perfil devem ser feitas com cuidado.</p>
+    </div>
+    {% endif %}
+
+    <!-- Estatísticas do Médico -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card-scientific p-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-stethoscope me-2" style="color: var(--cyan);"></i>
+                    Consultas Realizadas
+                </h5>
+                <div class="text-center">
+                    <h2 class="display-4">{{ doctor.consultations|length }}</h2>
+                    <small class="text-muted">Total de Consultas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-scientific p-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-calendar me-2" style="color: var(--cyan);"></i>
+                    Membro Desde
+                </h5>
+                <div class="text-center">
+                    <h4>{{ doctor.registration_date.strftime('%d/%m/%Y') if doctor.registration_date else '-' }}</h4>
+                    <small class="text-muted">
+                        {% if doctor.registration_date %}
+                        Há {{ ((now or doctor.registration_date) - doctor.registration_date).days }} dias
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Consulta{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="text-white">
+            <i class="fas fa-stethoscope me-2" style="color: var(--accent-cyan);"></i>
+            Consulta #{{ consultation.id }}
+        </h2>
+        <div>
+            <a href="{{ url_for('patient.view_patient', patient_id=patient.id) }}" class="btn btn-outline-scientific">
+                <i class="fas fa-arrow-left me-2"></i>Voltar ao Paciente
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Dados da Consulta -->
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="text-white mb-3">
+                    <i class="fas fa-info-circle me-2" style="color: var(--accent-cyan);"></i>
+                    Dados da Consulta
+                </h5>
+                <table class="table table-borderless">
+                    <tr>
+                        <td class="text-muted" style="width: 120px;">Paciente:</td>
+                        <td class="text-white">{{ patient.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Data:</td>
+                        <td class="text-white">{{ consultation.consultation_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Estado:</td>
+                        <td>
+                            {% if consultation.status == 'em_andamento' %}
+                            <span class="badge bg-warning">Em andamento</span>
+                            {% else %}
+                            <span class="badge bg-success">Concluída</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Sintomas:</td>
+                        <td class="text-white">{{ consultation.symptoms }}</td>
+                    </tr>
+                    {% if consultation.vital_signs %}
+                    <tr>
+                        <td class="text-muted">Sinais Vitais:</td>
+                        <td class="text-white">{{ consultation.vital_signs }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if consultation.observations %}
+                    <tr>
+                        <td class="text-muted">Observações:</td>
+                        <td class="text-white">{{ consultation.observations }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <!-- IA (se consulta em andamento) -->
+        {% if consultation.status == 'em_andamento' %}
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="text-white mb-3">
+                    <i class="fas fa-brain me-2" style="color: var(--accent-cyan);"></i>
+                    Análise da IA
+                </h5>
+                <div id="aiResult">
+                    <button class="btn btn-scientific w-100" onclick="analyzeWithAI()">
+                        <i class="fas fa-robot me-2"></i>Analisar com IA
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Diagnóstico -->
+        {% if diagnosis %}
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="text-white mb-3">
+                    <i class="fas fa-clipboard-list me-2" style="color: var(--accent-cyan);"></i>
+                    Diagnóstico Final
+                </h5>
+                <table class="table table-borderless">
+                    <tr>
+                        <td class="text-muted">Diagnóstico:</td>
+                        <td class="text-white fw-bold">{{ diagnosis.doctor_diagnosis }}</td>
+                    </tr>
+                    {% if diagnosis.prescribed_medication %}
+                    <tr>
+                        <td class="text-muted">Medicação:</td>
+                        <td class="text-white">{{ diagnosis.prescribed_medication }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if diagnosis.recommendations %}
+                    <tr>
+                        <td class="text-muted">Recomendações:</td>
+                        <td class="text-white">{{ diagnosis.recommendations }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4 text-center">
+                <i class="fas fa-stethoscope fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Aguardando Diagnóstico Final</p>
+                <a href="{{ url_for('consultation.add_diagnosis', consultation_id=consultation.id) }}"
+                    class="btn btn-scientific">
+                    <i class="fas fa-check-circle me-2"></i>Registar Diagnóstico
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Histórico do Paciente -->
+    {% if history and history|length > 1 %}
+    <div class="card-scientific p-4">
+        <h5 class="text-white mb-3">
+            <i class="fas fa-history me-2" style="color: var(--accent-cyan);"></i>
+            Histórico de Consultas Anteriores
+        </h5>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Sintomas</th>
+                        <th>Diagnóstico</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in history %}
+                    {% if c.id != consultation.id %}
+                    <tr>
+                        <td>{{ c.consultation_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ c.symptoms[:50] }}...</td>
+                        <td>{{ c.diagnosis.doctor_diagnosis if c.diagnosis else '-' }}</td>
+                        <td>
+                            <a href="{{ url_for('consultation.view_consultation', consultation_id=c.id) }}"
+                                class="btn btn-sm btn-outline-scientific">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    {% endif %}
+    
+    {% if consultation.status == 'concluida' %}
+        <a href="{{ url_for('report.consultation_report', consultation_id=consultation.id) }}" class="btn btn-outline-scientific">
+            <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+        </a>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function analyzeWithAI() {
+        const btn = document.querySelector('#aiResult button');
+        const originalText = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>A IA está a analisar...';
+        
+        fetch(window.location.href + '/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            let html = '<h6 class="text-info mb-3">🧠 Resultado da Análise da IA:</h6>';
+            
+            // MOSTRAR SE USOU HISTÓRICO
+            if (data.usou_historico && data.historico_info && data.historico_info.usado) {
+                html += '<div class="alert alert-info py-2 mb-3">';
+                html += '<i class="fas fa-history me-2"></i> <strong>IA usou o Histórico Clínico do Paciente</strong>';
+                
+                if (data.historico_info.condicoes_encontradas.length > 0) {
+                    html += '<div class="mt-2 small">';
+                    html += '📋 <strong>Condições Crónicas consideradas:</strong><ul class="mb-0 mt-1">';
+                    data.historico_info.condicoes_encontradas.forEach(c => {
+                        html += `<li>${c.nome} (registado em ${c.data})</li>`;
+                    });
+                    html += '</ul></div>';
+                }
+                
+                if (data.historico_info.ajustes_aplicados.length > 0) {
+                    html += '<div class="mt-2 small">';
+                    html += '📈 <strong>Ajustes de Probabilidade aplicados:</strong><ul class="mb-0 mt-1">';
+                    data.historico_info.ajustes_aplicados.forEach(a => {
+                        html += `<li>${a}</li>`;
+                    });
+                    html += '</ul></div>';
+                }
+                
+                html += '</div>';
+            } else if (data.usou_historico) {
+                html += '<div class="alert alert-secondary py-2 mb-3">';
+                html += '<i class="fas fa-history me-2"></i> <strong>IA consultou o Histórico</strong> - Nenhuma Condição Crónica ou Diagnóstico anterior encontrado.';
+                html += '</div>';
+            }
+            
+            // Possibilidades
+            if (data.possibilidades && data.possibilidades.length > 0) {
+                html += '<p class="mb-2 mt-2">📊 <strong>Possíveis Diagnósticos:</strong></p>';
+                data.possibilidades.forEach(p => {
+                    let barClass = 'bg-info';
+                    if (p.probabilidade > 60) barClass = 'bg-danger';
+                    else if (p.probabilidade > 30) barClass = 'bg-warning';
+                    
+                    html += `<div class="mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span>${p.doenca}</span>
+                                    <span class="text-info">${p.probabilidade}%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar ${barClass}" style="width: ${p.probabilidade}%"></div>
+                                </div>
+                            </div>`;
+                });
+            }
+            
+            // Alertas
+            if (data.alertas && data.alertas.length > 0) {
+                html += '<p class="mb-2 mt-3">⚠️ <strong>Alertas e Observações:</strong></p>';
+                data.alertas.forEach(a => {
+                    html += `<div class="alert alert-warning py-2 small">${a}</div>`;
+                });
+            }
+            
+            // Exames sugeridos
+            if (data.exames_sugeridos && data.exames_sugeridos.length > 0) {
+                html += '<p class="mb-2 mt-2">🔬 <strong>Exames Sugeridos:</strong></p>';
+                html += '<ul><li>' + data.exames_sugeridos.join('</li><li>') + '</li></ul>';
+            }
+            
+            document.getElementById('aiResult').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            document.getElementById('aiResult').innerHTML = `<div class="alert alert-danger">❌ Erro ao Analisar: ${error.message}</div>`;
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+    }
+
+    if (data.usou_historico) {
+        html += '<div class="alert alert-info mt-2 mb-2 py-1">';
+        html += '<i class="fas fa-history me-1"></i> <small>IA considerou o Histórico Clínico do Paciente</small>';
+        html += '</div>';
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}MedIntel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center text-center fade-in-up">
+    <div class="col-lg-8">
+        <div class="card-scientific p-5">
+            <div class="mb-4">
+                <i class="fas fa-microscope fa-4x" style="color: var(--accent-cyan);"></i>
+            </div>
+            <h1 class="text-white mb-3">MedIntel</h1>
+            <p class="lead mb-4">
+                Sistema Inteligente de Apoio à Decisão Clínica
+            </p>
+            <p class="text-muted mb-4">
+                Potenciado por IA para auxiliar Médicos no Diagnóstico preciso e rápido,
+                principalmente também nas Doenças mais comuns em Angola.
+            </p>
+
+            {% if not current_user.is_authenticated %}
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-scientific">
+                    <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                </a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-scientific">
+                    <i class="fas fa-user-plus me-2"></i>Registar
+                </a>
+            </div>
+            {% else %}
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-scientific">
+                    <i class="fas fa-tachometer-alt me-2"></i>Aceder ao Dashboard
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Features -->
+        <div class="row mt-5 g-4">
+            <div class="col-md-4">
+                <div class="card-scientific p-3 text-center">
+                    <i class="fas fa-brain fa-2x text-info mb-2"></i>
+                    <h6>IA Contextual</h6>
+                    <small class="text-muted">Análise automática do Histórico</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-scientific p-3 text-center">
+                    <i class="fas fa-chart-simple fa-2x text-info mb-2"></i>
+                    <h6>Probabilidades</h6>
+                    <small class="text-muted">Diagnósticos com Percentuais</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-scientific p-3 text-center">
+                    <i class="fas fa-wifi fa-2x text-info mb-2"></i>
+                    <h6>Offline-first</h6>
+                    <small class="text-muted">Funciona sem Internet</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

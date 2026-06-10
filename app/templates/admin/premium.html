@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Premium{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">
+            <i class="fas fa-crown me-2" style="color: var(--warning-orange);"></i>
+            Funcionalidades Premium
+        </h2>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-scientific">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-brain me-2" style="color: var(--cyan);"></i>
+                    IA Avançada
+                </h5>
+                <p>Análise de imagens médicas com IA (Raio-X, Tomografias, Ressonâncias)</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-x-ray text-info me-2"></i> Detecção de anomalias em Raio-X</li>
+                    <li><i class="fas fa-waveform text-info me-2"></i> Análise de eletrocardiogramas</li>
+                    <li><i class="fas fa-microscope text-info me-2"></i> Classificação de células</li>
+                </ul>
+                <hr>
+                <h6>📊 Estatísticas Premium</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-chart-line text-info me-2"></i> Análises IA realizadas: <strong>0</strong></li>
+                    <li><i class="fas fa-file-pdf text-info me-2"></i> Relatórios gerados: <strong>0</strong></li>
+                    <li><i class="fas fa-cloud-upload-alt text-info me-2"></i> Uploads em Cloud: <strong>0 MB</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-scientific p-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-chart-simple me-2" style="color: var(--cyan);"></i>
+                    Próximas Funcionalidades
+                </h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-robot text-info me-2"></i> IA para Diagnóstico de Malária</li>
+                    <li><i class="fas fa-chart-pie text-info me-2"></i> Dashboard executivo avançado</li>
+                    <li><i class="fas fa-database text-info me-2"></i> Backup automático na cloud</li>
+                    <li><i class="fas fa-envelope text-info me-2"></i> Relatórios por email automáticos</li>
+                    <li><i class="fas fa-mobile-alt text-info me-2"></i> Aplicação mobile para médicos</li>
+                    <li><i class="fas fa-language text-info me-2"></i> Suporte multilíngue</li>
+                </ul>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-lock me-2"></i> Funcionalidades em desenvolvimento - Disponível em breve
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-scientific p-4">
+        <h5 class="mb-3">
+            <i class="fas fa-chart-line me-2" style="color: var(--cyan);"></i>
+            Métricas de Uso
+        </h5>
+        <div class="row text-center">
+            <div class="col-md-3">
+                <h3>0</h3>
+                <small>Hospitais</small>
+            </div>
+            <div class="col-md-3">
+                <h3>0</h3>
+                <small>Médicos Ativos</small>
+            </div>
+            <div class="col-md-3">
+                <h3>0</h3>
+                <small>Consultas/Mês</small>
+            </div>
+            <div class="col-md-3">
+                <h3>0</h3>
+                <small>Análises IA</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

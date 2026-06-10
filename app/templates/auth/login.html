@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-in-up">
+    <div class="col-md-6 col-lg-5">
+        <div class="card-scientific p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="mb-3">
+                    <i class="fas fa-brain fa-3x" style="color: var(--accent-cyan);"></i>
+                </div>
+                <h2 class="text-white mb-2">Bem-vindo de Volta</h2>
+                <p class="text-muted">Aceda ao Sistema de apoio Clínico</p>
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <span class="badge-scientific">Médicos</span>
+                    <span class="badge-scientific">Especialistas</span>
+                    <span class="badge-scientific">Pesquisadores</span>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-envelope me-2"></i>Email Profissional
+                    </label>
+                    <input type="email" class="form-control form-control-scientific" name="email"
+                        placeholder="medico@hospital.ao" required autofocus>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-lock me-2"></i>Palavra-passe
+                    </label>
+                    <input type="password" class="form-control form-control-scientific" name="password"
+                        placeholder="••••••••" required>
+                    <div class="text-end mt-2">
+                        <a href="{{ url_for('auth.forgot_password') }}" class="text-info text-decoration-none small">
+                            <i class="fas fa-question-circle me-1"></i>Esqueceu-se da Palavra-passe?
+                        </a>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-scientific w-100">
+                    <i class="fas fa-arrow-right-to-bracket me-2"></i>Entrar no Sistema
+                </button>
+            </form>
+
+            <hr class="my-4" style="border-color: rgba(0,180,216,0.3);">
+
+            <div class="text-center">
+                <p class="mb-0">
+                    <i class="fas fa-user-md me-2"></i>
+                    Ainda não tem acesso?
+                    <a href="{{ url_for('auth.register') }}" class="text-info text-decoration-none">
+                        Registe-se aqui
+                    </a>
+                </p>
+                <small class="text-muted d-block mt-3">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    Dados Protegidos com Criptografia Avançada
+                </small>
+            </div>
+        </div>
+
+        <!-- Info adicional -->
+        <div class="text-center mt-4">
+            <div class="d-flex justify-content-center gap-3">
+                <div>
+                    <i class="fas fa-chart-line text-info"></i>
+                    <small class="d-block">IA Avançada</small>
+                </div>
+                <div>
+                    <i class="fas fa-history text-info"></i>
+                    <small class="d-block">Histórico Clínico</small>
+                </div>
+                <div>
+                    <i class="fas fa-microscope text-info"></i>
+                    <small class="d-block">Análise de Imagens</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
