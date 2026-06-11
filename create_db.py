@@ -15,7 +15,12 @@ with app.app_context():
     # Criar todas as tabelas
     db.create_all()
     print("✅ Base de dados criada com sucesso!")
-    print("📊 Tabelas criadas:", db.engine.table_names())
+    
+    # Verificar tabelas (forma compatível)
+    from sqlalchemy import inspect
+    inspector = inspect(db.engine)
+    tables = inspector.get_table_names()
+    print("📊 Tabelas criadas:", tables)
     
     # Criar Super Admin se não existir
     from app.models.user import User
